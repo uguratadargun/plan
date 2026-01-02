@@ -4,8 +4,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: weekly-planner-backend
-    ports:
-      - "5001:5001"
+    expose:
+      - "5001"
     environment:
       - PORT=5001
       - NODE_ENV=production
@@ -34,8 +34,8 @@ services:
       args:
         - VITE_API_URL=${VITE_API_URL:-/api}
     container_name: weekly-planner-frontend
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     depends_on:
       - backend
     restart: unless-stopped
