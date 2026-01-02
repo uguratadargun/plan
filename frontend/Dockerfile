@@ -10,8 +10,8 @@ COPY tsconfig.node.json ./
 COPY vite.config.ts ./
 COPY index.html ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (npm install will create package-lock.json if it doesn't exist)
+RUN npm install
 
 # Copy source code
 COPY src ./src
