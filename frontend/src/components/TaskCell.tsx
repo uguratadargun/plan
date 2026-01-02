@@ -10,24 +10,130 @@ interface TaskCellProps {
   persons: Person[];
   weekStart: string;
   onTaskUpdate: () => void;
+  style?: React.CSSProperties;
 }
 
-export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpdate }: TaskCellProps) {
+export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpdate, style }: TaskCellProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [hoveredTask, setHoveredTask] = useState<Task | null>(null);
   const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   const handleCellClick = () => {
+    // Don't open modal if we just finished dragging
+    if (draggedTaskId) {
+      return;
+    }
     setEditingTask(null);
     setIsModalOpen(true);
   };
 
   const handleTaskClick = (e: React.MouseEvent, task: Task) => {
     e.stopPropagation();
+    // Don't open modal if we just finished dragging
+    if (draggedTaskId === task.id) {
+      return;
+    }
     setEditingTask(task);
     setIsModalOpen(true);
+  };
+
+  const handleTaskDragStart = (e: React.DragEvent, task: Task) => {
+    e.stopPropagation();
+    setDraggedTaskId(task.id);
+    // Close hover panel if open
+    setHoveredTask(null);
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      taskId: task.id,
+      currentWeekStart: task.weekStart,
+      currentPersonIds: task.personIds || (task.personId ? [task.personId] : [])
+    }));
+    // Add visual feedback
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+  };
+
+  const handleTaskDragEnd = () => {
+    setDraggedTaskId(null);
+  };
+
+  const handleCellDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    setIsDragOver(true);
+  };
+
+  const handleCellDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set drag over to false if we're actually leaving the cell
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleCellDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('application/json'));
+      if (!data.taskId) return;
+
+      const taskId = data.taskId;
+      const currentWeekStart = data.currentWeekStart;
+      const currentPersonIds = data.currentPersonIds;
+
+      // Check if task is being moved to a different location
+      const isDifferentWeek = currentWeekStart !== weekStart;
+      const isDifferentPerson = !currentPersonIds.includes(person.id);
+
+      if (isDifferentWeek || isDifferentPerson) {
+        // Update task
+        const updates: Partial<Task> = {};
+        
+        if (isDifferentWeek) {
+          updates.weekStart = weekStart;
+        }
+
+        if (isDifferentPerson) {
+          // If task is being moved to a different person
+          // If the person is already in the list, keep all persons
+          // Otherwise, replace with the new person only
+          if (currentPersonIds.includes(person.id)) {
+            // Person already assigned, keep all persons (no change needed)
+            // But if week changed, we still need to update
+            if (!isDifferentWeek) {
+              return; // No change needed
+            }
+          } else {
+            // New person, replace with new person only
+            updates.personIds = [person.id];
+          }
+        }
+
+        // Import tasksApi
+        const { tasksApi } = await import('../services/api');
+        await tasksApi.update(taskId, updates);
+        onTaskUpdate();
+      }
+    } catch (error) {
+      console.error('Error moving task:', error);
+    }
+
+    setDraggedTaskId(null);
   };
 
   const handleClose = () => {
@@ -111,7 +217,14 @@ export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpda
 
   return (
     <>
-      <div className="task-cell" onClick={handleCellClick}>
+      <div 
+        className={`task-cell ${isDragOver ? 'drag-over' : ''}`}
+        onClick={handleCellClick} 
+        onDragOver={handleCellDragOver}
+        onDragLeave={handleCellDragLeave}
+        onDrop={handleCellDrop}
+        style={style}
+      >
         {tasks.length === 0 ? (
           <div className="task-cell-empty">+ İş Ekle</div>
         ) : (
@@ -127,18 +240,28 @@ export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpda
                 const hasDescription = taskDescription && taskDescription !== taskName;
                 // Backward compatibility: if color doesn't exist, generate one or use default
                 const taskColor = task.color || '#3b82f6';
+                const isDragging = draggedTaskId === task.id;
                 
                 return (
                   <div
                     key={task.id}
-                    className="task-item"
+                    className={`task-item ${isDragging ? 'dragging' : ''}`}
+                    draggable
+                    onDragStart={(e) => handleTaskDragStart(e, task)}
+                    onDragEnd={handleTaskDragEnd}
                     style={{
                       borderLeftColor: taskColor,
                       backgroundColor: `${taskColor}15`,
-                      color: taskColor
+                      color: taskColor,
+                      opacity: isDragging ? 0.5 : 1,
+                      cursor: 'grab'
                     }}
                     onClick={(e) => handleTaskClick(e, task)}
-                    onMouseEnter={(e) => hasDescription && handleTaskMouseEnter(e, task)}
+                    onMouseEnter={(e) => {
+                      if (!draggedTaskId && hasDescription) {
+                        handleTaskMouseEnter(e, task);
+                      }
+                    }}
                     onMouseLeave={handleTaskMouseLeave}
                   >
                     <span className="task-name">{taskName}</span>

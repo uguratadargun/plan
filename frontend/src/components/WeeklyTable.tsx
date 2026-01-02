@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { Person, Task, Week } from '../types';
 import { personsApi, tasksApi, weeksApi } from '../services/api';
 import { getCSSVar, COLORS } from '../utils/colors';
@@ -18,9 +18,29 @@ export default function WeeklyTable() {
   const weekHeadersRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const headerScrollRef = useRef<HTMLDivElement>(null);
   const bodyScrollRef = useRef<HTMLDivElement>(null);
+  const [personsColumnWidth, setPersonsColumnWidth] = useState(250);
+  const [weekWidths, setWeekWidths] = useState<Map<string, number>>(new Map());
+  const isResizingRef = useRef<string | null>(null);
+  const resizeStartXRef = useRef<number>(0);
+  const resizeStartWidthRef = useRef<number>(0);
 
   useEffect(() => {
     loadData();
+    // Load saved column widths from localStorage
+    const savedPersonsWidth = localStorage.getItem('personsColumnWidth');
+    if (savedPersonsWidth) {
+      setPersonsColumnWidth(parseInt(savedPersonsWidth, 10));
+    }
+    
+    const savedWeekWidths = localStorage.getItem('weekWidths');
+    if (savedWeekWidths) {
+      try {
+        const widths = JSON.parse(savedWeekWidths);
+        setWeekWidths(new Map(Object.entries(widths)));
+      } catch (e) {
+        console.error('Error loading week widths:', e);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -218,6 +238,52 @@ export default function WeeklyTable() {
     setDragOverPersonId(null);
   };
 
+  const handleResizeStart = (e: React.MouseEvent, type: 'persons' | string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isResizingRef.current = type;
+    resizeStartXRef.current = e.clientX;
+    
+    if (type === 'persons') {
+      resizeStartWidthRef.current = personsColumnWidth;
+    } else {
+      // type is week startDate
+      const currentWidth = weekWidths.get(type) || 150;
+      resizeStartWidthRef.current = currentWidth;
+    }
+    
+    document.addEventListener('mousemove', handleResizeMove);
+    document.addEventListener('mouseup', handleResizeEnd);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  };
+
+  const handleResizeMove = (e: MouseEvent) => {
+    if (!isResizingRef.current) return;
+    
+    const diff = e.clientX - resizeStartXRef.current;
+    const newWidth = Math.max(150, resizeStartWidthRef.current + diff);
+    
+    if (isResizingRef.current === 'persons') {
+      setPersonsColumnWidth(newWidth);
+      localStorage.setItem('personsColumnWidth', newWidth.toString());
+    } else {
+      // Resizing a week column
+      const newWeekWidths = new Map(weekWidths);
+      newWeekWidths.set(isResizingRef.current, newWidth);
+      setWeekWidths(newWeekWidths);
+      localStorage.setItem('weekWidths', JSON.stringify(Object.fromEntries(newWeekWidths)));
+    }
+  };
+
+  const handleResizeEnd = () => {
+    isResizingRef.current = null;
+    document.removeEventListener('mousemove', handleResizeMove);
+    document.removeEventListener('mouseup', handleResizeEnd);
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  };
+
   if (isLoading) {
     return <div className="loading">Yükleniyor...</div>;
   }
@@ -226,33 +292,56 @@ export default function WeeklyTable() {
     <>
       <div className="weekly-table-container">
         <div className="table-header">
-          <div className="table-header-left">
+          <div 
+            className="table-header-left"
+            style={{ width: `${personsColumnWidth}px` }}
+          >
             <button className="btn-add-person" onClick={handleAddPerson}>
               + Kişi Ekle
             </button>
           </div>
+          <div 
+            className="resize-handle"
+            onMouseDown={(e) => handleResizeStart(e, 'persons')}
+          />
           <div className="table-header-right" ref={headerScrollRef}>
             <div className="week-headers">
-              {weeks.map((week) => (
-                <div
-                  key={week.startDate}
-                  ref={(el) => {
-                    if (el) weekHeadersRef.current.set(week.startDate, el);
-                  }}
-                  className={`week-header ${week.isCurrent ? 'current-week' : ''}`}
-                >
-                  <div className="week-title">{week.displayText}</div>
-                  {week.isCurrent && (
-                    <div className="current-indicator">Bugün</div>
+              {weeks.map((week, index) => (
+                <Fragment key={week.startDate}>
+                  <div
+                    ref={(el) => {
+                      if (el) weekHeadersRef.current.set(week.startDate, el);
+                    }}
+                    className={`week-header ${week.isCurrent ? 'current-week' : ''}`}
+                    style={{ 
+                      width: weekWidths.get(week.startDate) 
+                        ? `${weekWidths.get(week.startDate)}px` 
+                        : undefined,
+                      flex: weekWidths.get(week.startDate) ? '0 0 auto' : undefined
+                    }}
+                  >
+                    <div className="week-title">{week.displayText}</div>
+                    {week.isCurrent && (
+                      <div className="current-indicator">Bugün</div>
+                    )}
+                  </div>
+                  {index < weeks.length - 1 && (
+                    <div 
+                      className="resize-handle week-resize-handle"
+                      onMouseDown={(e) => handleResizeStart(e, week.startDate)}
+                    />
                   )}
-                </div>
+                </Fragment>
               ))}
             </div>
           </div>
         </div>
 
         <div className="table-body">
-          <div className="persons-column">
+          <div 
+            className="persons-column"
+            style={{ width: `${personsColumnWidth}px` }}
+          >
             {persons.map((person) => (
               <div
                 key={person.id}
@@ -301,15 +390,28 @@ export default function WeeklyTable() {
                 }}
                 className="person-tasks-row"
               >
-                {weeks.map((week) => (
-                  <TaskCell
-                    key={`${person.id}-${week.startDate}`}
-                    tasks={getTasksForCell(person.id, week.startDate)}
-                    person={person}
-                    persons={persons}
-                    weekStart={week.startDate}
-                    onTaskUpdate={loadData}
-                  />
+                {weeks.map((week, index) => (
+                  <Fragment key={week.startDate}>
+                    <TaskCell
+                      tasks={getTasksForCell(person.id, week.startDate)}
+                      person={person}
+                      persons={persons}
+                      weekStart={week.startDate}
+                      onTaskUpdate={loadData}
+                      style={{
+                        width: weekWidths.get(week.startDate) 
+                          ? `${weekWidths.get(week.startDate)}px` 
+                          : undefined,
+                        flex: weekWidths.get(week.startDate) ? '0 0 auto' : undefined
+                      }}
+                    />
+                    {index < weeks.length - 1 && (
+                      <div 
+                        className="resize-handle week-resize-handle"
+                        onMouseDown={(e) => handleResizeStart(e, week.startDate)}
+                      />
+                    )}
+                  </Fragment>
                 ))}
               </div>
             ))}

@@ -24,34 +24,44 @@
 }
 
 .table-header-left {
-  width: 250px;
-  min-width: 250px;
+  min-width: 150px;
+  flex: 0 0 auto;
   padding: 1.25rem;
   border-right: 1px solid #e2e8f0;
   background: white;
+  position: relative;
 }
 
 .table-header-right {
   flex: 1;
   overflow-x: auto;
+  display: flex;
+  align-items: stretch;
 }
 
 .week-headers {
   display: flex;
   min-width: 100%;
+  align-items: stretch;
 }
 
 .week-header {
-  min-width: 150px;
+  min-width: 120px;
+  flex: 1 1 0;
   padding: 1.25rem 1rem;
   text-align: center;
   border-right: 1px solid #e2e8f0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  flex-shrink: 0;
 }
 
 .week-header.current-week {
-  background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, var(--color-border) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-tertiary) 0%,
+    var(--color-border) 100%
+  );
   border-bottom: 3px solid var(--color-accent);
   font-weight: 600;
   box-shadow: inset 0 -3px 0 var(--color-accent);
@@ -77,12 +87,13 @@
 }
 
 .persons-column {
-  width: 250px;
-  min-width: 250px;
+  min-width: 150px;
+  flex: 0 0 auto;
   border-right: 1px solid #e2e8f0;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .persons-column > .person-row {
@@ -211,12 +222,49 @@
 }
 
 .person-tasks-row .task-cell {
-  flex: 1;
-  min-width: 150px;
+  flex: 1 1 0;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+/* Resize handles */
+.resize-handle {
+  width: 4px;
+  background: transparent;
+  cursor: col-resize;
+  position: relative;
+  z-index: 20;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+  margin: 0;
+}
+
+.resize-handle:hover {
+  background: var(--color-accent, #3b82f6);
+}
+
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+}
+
+.week-resize-handle {
+  align-self: stretch;
+  height: auto;
+  min-height: 100%;
 }
 
 .btn-add-person {
-  background: linear-gradient(135deg, var(--color-primary-gradient-start) 0%, var(--color-primary-gradient-end) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-gradient-start) 0%,
+    var(--color-primary-gradient-end) 100%
+  );
   color: white;
   border: none;
   padding: 0.875rem 1.5rem;
@@ -233,7 +281,11 @@
 .btn-add-person:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px var(--shadow-primary-hover);
-  background: linear-gradient(135deg, var(--color-primary-gradient-hover-start) 0%, var(--color-primary-gradient-hover-end) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-gradient-hover-start) 0%,
+    var(--color-primary-gradient-hover-end) 100%
+  );
 }
 
 .btn-add-person:active {
@@ -268,17 +320,18 @@
 /* Responsive */
 @media (max-width: 768px) {
   .table-header-left {
-    width: 200px;
-    min-width: 200px;
-  }
-  
-  .persons-column {
-    width: 200px;
-    min-width: 200px;
-  }
-  
-  .week-header {
     min-width: 120px;
   }
-}
 
+  .persons-column {
+    min-width: 120px;
+  }
+
+  .week-header {
+    min-width: 100px;
+  }
+
+  .person-tasks-row .task-cell {
+    min-width: 100px;
+  }
+}

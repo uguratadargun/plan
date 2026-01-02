@@ -20,6 +20,15 @@
   transform: translateY(-1px);
 }
 
+.task-cell.drag-over {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  border-color: var(--color-primary);
+  border-width: 2px;
+  border-style: dashed;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  transform: scale(1.02);
+}
+
 .task-count-badge {
   position: absolute;
   top: 8px;
@@ -65,7 +74,7 @@
   padding: 0.625rem 0.875rem;
   border-radius: 8px;
   font-size: 0.875rem;
-  cursor: pointer;
+  cursor: grab;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   word-break: break-word;
   position: relative;
@@ -73,13 +82,24 @@
   border: 1px solid transparent;
   border-left-width: 4px;
   font-weight: 500;
+  user-select: none;
 }
 
-.task-item:hover {
+.task-item:active {
+  cursor: grabbing;
+}
+
+.task-item:hover:not(.dragging) {
   transform: translateX(3px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   border-color: currentColor;
   opacity: 0.9;
+}
+
+.task-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  cursor: grabbing;
 }
 
 .task-name {
