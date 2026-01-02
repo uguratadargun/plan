@@ -33,6 +33,10 @@ COPY --from=builder /app/dist ./dist
 # Create data directory for database
 RUN mkdir -p /app/data
 
+# Set environment variables
+ENV PORT=5001
+ENV NODE_ENV=production
+
 # Expose port
 EXPOSE 5001
 

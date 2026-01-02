@@ -12,7 +12,7 @@ Bu proje, her servis için ayrı Coolify resource kullanarak deploy edilir.
 6. **Dockerfile Path**: `Dockerfile`
 7. **Port**: `5001`
 8. **Domain**: `planback.uguratadargun.com`
-9. **Environment Variables**:
+9. **Environment Variables** (opsiyonel - zaten Dockerfile'da var):
    ```
    PORT=5001
    NODE_ENV=production
