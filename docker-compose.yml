@@ -27,9 +27,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
-    networks:
-      - app-network
-
   frontend:
     build:
       context: ./frontend
@@ -52,12 +49,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
-    networks:
-      - app-network
 
 volumes:
   backend-data:
-
-networks:
-  app-network:
-    driver: bridge
