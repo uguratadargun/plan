@@ -30,6 +30,9 @@ export default function WeeklyTable() {
     const savedPersonsWidth = localStorage.getItem('personsColumnWidth');
     if (savedPersonsWidth) {
       setPersonsColumnWidth(parseInt(savedPersonsWidth, 10));
+    } else {
+      // Default width if not saved
+      setPersonsColumnWidth(300);
     }
     
     const savedWeekWidths = localStorage.getItem('weekWidths');
@@ -248,7 +251,7 @@ export default function WeeklyTable() {
       resizeStartWidthRef.current = personsColumnWidth;
     } else {
       // type is week startDate
-      const currentWidth = weekWidths.get(type) || 150;
+      const currentWidth = weekWidths.get(type) || 200;
       resizeStartWidthRef.current = currentWidth;
     }
     
@@ -262,7 +265,7 @@ export default function WeeklyTable() {
     if (!isResizingRef.current) return;
     
     const diff = e.clientX - resizeStartXRef.current;
-    const newWidth = Math.max(150, resizeStartWidthRef.current + diff);
+    const newWidth = Math.max(200, resizeStartWidthRef.current + diff);
     
     if (isResizingRef.current === 'persons') {
       setPersonsColumnWidth(newWidth);
@@ -284,6 +287,75 @@ export default function WeeklyTable() {
     document.body.style.userSelect = '';
   };
 
+  const calculateAutoWidth = (weekStart: string): number => {
+    // Calculate the width needed to fit all tasks in this week
+    let maxTaskWidth = 0;
+    const baseWidth = 200; // Minimum width
+    const padding = 32; // Cell padding (16px * 2)
+    const taskPadding = 24; // Task item padding
+    const minTaskWidth = 100; // Minimum width per task
+    
+    // Get all tasks for this week across all persons
+    const weekTasks = tasks.filter(task => task.weekStart === weekStart);
+    
+    // Group tasks by person to find the person with most tasks
+    const tasksByPerson = new Map<string, Task[]>();
+    weekTasks.forEach(task => {
+      const taskPersonIds = task.personIds || (task.personId ? [task.personId] : []);
+      taskPersonIds.forEach(personId => {
+        if (!tasksByPerson.has(personId)) {
+          tasksByPerson.set(personId, []);
+        }
+        tasksByPerson.get(personId)!.push(task);
+      });
+    });
+    
+    // Find the person with most tasks
+    let maxTasksInCell = 0;
+    tasksByPerson.forEach((personTasks) => {
+      if (personTasks.length > maxTasksInCell) {
+        maxTasksInCell = personTasks.length;
+      }
+    });
+    
+    // Calculate width based on task names
+    weekTasks.forEach(task => {
+      const taskName = task.name || task.description || '';
+      // Estimate width: roughly 8px per character
+      const estimatedWidth = taskName.length * 8 + taskPadding;
+      if (estimatedWidth > maxTaskWidth) {
+        maxTaskWidth = estimatedWidth;
+      }
+    });
+    
+    // If multiple tasks, we need more width
+    if (maxTasksInCell > 1) {
+      maxTaskWidth = Math.max(maxTaskWidth, maxTasksInCell * minTaskWidth);
+    }
+    
+    // Return the calculated width with some extra space, but at least baseWidth
+    return Math.max(baseWidth, maxTaskWidth + padding + 20);
+  };
+
+  const handleResizeDoubleClick = (e: React.MouseEvent, type: 'persons' | string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (type === 'persons') {
+      // Auto-resize persons column to fit content
+      const newWidth = 300; // Default width for persons
+      setPersonsColumnWidth(newWidth);
+      localStorage.setItem('personsColumnWidth', newWidth.toString());
+    } else {
+      // Auto-resize week column to fit all tasks
+      const autoWidth = calculateAutoWidth(type);
+      const newWeekWidths = new Map(weekWidths);
+      newWeekWidths.set(type, autoWidth);
+      setWeekWidths(newWeekWidths);
+      localStorage.setItem('weekWidths', JSON.stringify(Object.fromEntries(newWeekWidths)));
+    }
+  };
+
   if (isLoading) {
     return <div className="loading">Yükleniyor...</div>;
   }
@@ -303,6 +375,7 @@ export default function WeeklyTable() {
           <div 
             className="resize-handle"
             onMouseDown={(e) => handleResizeStart(e, 'persons')}
+            onDoubleClick={(e) => handleResizeDoubleClick(e, 'persons')}
           />
           <div className="table-header-right" ref={headerScrollRef}>
             <div className="week-headers">
@@ -329,6 +402,7 @@ export default function WeeklyTable() {
                     <div 
                       className="resize-handle week-resize-handle"
                       onMouseDown={(e) => handleResizeStart(e, week.startDate)}
+                      onDoubleClick={(e) => handleResizeDoubleClick(e, week.startDate)}
                     />
                   )}
                 </Fragment>
@@ -409,6 +483,7 @@ export default function WeeklyTable() {
                       <div 
                         className="resize-handle week-resize-handle"
                         onMouseDown={(e) => handleResizeStart(e, week.startDate)}
+                        onDoubleClick={(e) => handleResizeDoubleClick(e, week.startDate)}
                       />
                     )}
                   </Fragment>
