@@ -25,18 +25,25 @@ Bu proje, her servis için ayrı Coolify resource kullanarak deploy edilir.
 ## Frontend Deployment
 
 1. Coolify Dashboard → **New Resource**
-2. **Type**: Dockerfile
+2. **Type**: **Nixpacks** (Dockerfile değil!)
 3. **Repository**: Bu Git repository'nin URL'si (backend ile aynı)
 4. **Branch**: `main`
 5. **Root Directory**: `frontend`
-6. **Dockerfile Path**: `Dockerfile`
-7. **Port**: `80`
-8. **Domain**: `plan.uguratadargun.com`
-9. **Build Arguments**:
+6. **Port**: `3000`
+7. **Domain**: `plan.uguratadargun.com`
+8. **Environment Variables**:
    ```
    VITE_API_URL=https://planback.uguratadargun.com/api
+   NODE_ENV=production
    ```
-10. **Save** → **Deploy**
+9. **Save** → **Deploy**
+
+**Not**: Nixpacks otomatik olarak:
+- Node.js 20 kurar
+- `npm ci` ile dependencies yükler
+- `npm run build` ile build eder
+- `serve` ile static files'ları serve eder
+- SPA routing otomatik çalışır (serve.json sayesinde)
 
 ## Doğrulama
 
