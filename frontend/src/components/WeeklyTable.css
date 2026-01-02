@@ -51,10 +51,10 @@
 }
 
 .week-header.current-week {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border-bottom: 3px solid #2563eb;
+  background: linear-gradient(135deg, var(--color-bg-tertiary) 0%, var(--color-border) 100%);
+  border-bottom: 3px solid var(--color-accent);
   font-weight: 600;
-  box-shadow: inset 0 -3px 0 #2563eb;
+  box-shadow: inset 0 -3px 0 var(--color-accent);
 }
 
 .week-title {
@@ -65,7 +65,7 @@
 
 .current-indicator {
   font-size: 0.75rem;
-  color: #2563eb;
+  color: var(--color-accent);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -116,8 +116,8 @@
 }
 
 .person-row.drag-over {
-  border-top: 3px solid #2563eb;
-  background: #eff6ff;
+  border-top: 3px solid var(--color-accent);
+  background: var(--color-bg-tertiary);
 }
 
 .person-drag-handle {
@@ -139,8 +139,8 @@
 }
 
 .person-drag-handle:hover {
-  color: #2563eb;
-  background: #eff6ff;
+  color: var(--color-accent);
+  background: var(--color-bg-tertiary);
 }
 
 .person-info {
@@ -182,7 +182,7 @@
 
 .person-edit-btn:hover {
   background: #f0f0f0;
-  color: #2563eb;
+  color: var(--color-accent);
 }
 
 .empty-state {
@@ -216,7 +216,7 @@
 }
 
 .btn-add-person {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  background: linear-gradient(135deg, var(--color-primary-gradient-start) 0%, var(--color-primary-gradient-end) 100%);
   color: white;
   border: none;
   padding: 0.875rem 1.5rem;
@@ -226,19 +226,19 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-primary);
   letter-spacing: 0.3px;
 }
 
 .btn-add-person:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  box-shadow: 0 8px 20px var(--shadow-primary-hover);
+  background: linear-gradient(135deg, var(--color-primary-gradient-hover-start) 0%, var(--color-primary-gradient-hover-end) 100%);
 }
 
 .btn-add-person:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-primary);
 }
 
 /* Scrollbar styling */

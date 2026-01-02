@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Person } from '../types';
 import { personsApi } from '../services/api';
+import { getCSSVar, COLORS } from '../utils/colors';
 import './Modal.css';
 
 interface PersonModalProps {
@@ -10,13 +11,13 @@ interface PersonModalProps {
 
 export default function PersonModal({ person, onClose }: PersonModalProps) {
   const [name, setName] = useState(person?.name || '');
-  const [color, setColor] = useState(person?.color || '#2563eb');
+  const [color, setColor] = useState(person?.color || getCSSVar('--color-accent', COLORS.accent));
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (person) {
       setName(person.name);
-      setColor(person.color || '#2563eb');
+      setColor(person.color || getCSSVar('--color-accent', COLORS.accent));
     }
   }, [person]);
 
@@ -92,7 +93,7 @@ export default function PersonModal({ person, onClose }: PersonModalProps) {
                 type="text"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                placeholder="#2563eb"
+                placeholder={getCSSVar('--color-accent', COLORS.accent)}
               />
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { Task, Person } from '../types';
+import { getCSSVar, COLORS } from '../utils/colors';
 import './TaskDetailPanel.css';
 
 interface TaskDetailPanelProps {
@@ -44,8 +45,8 @@ export default function TaskDetailPanel({ task, persons, position, onClose }: Ta
                     key={p.id}
                     className="task-detail-person" 
                     style={{ 
-                      color: p.color || '#2563eb',
-                      backgroundColor: `${p.color || '#2563eb'}15`
+                      color: p.color || getCSSVar('--color-accent', COLORS.accent),
+                      backgroundColor: `${p.color || getCSSVar('--color-accent', COLORS.accent)}15`
                     }}
                   >
                     {p.name}

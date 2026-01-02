@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Task, Person } from '../types';
 import { tasksApi } from '../services/api';
+import { getCSSVar, COLORS } from '../utils/colors';
 import './Modal.css';
 
 interface TaskModalProps {
@@ -151,15 +152,15 @@ export default function TaskModal({ task, person, persons, weekStart, onClose }:
                     className={`person-select-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                     onClick={() => !isDisabled && handlePersonToggle(p.id)}
                     style={{ 
-                      borderLeftColor: p.color || '#2563eb',
+                      borderLeftColor: p.color || getCSSVar('--color-accent', COLORS.accent),
                       backgroundColor: isSelected 
-                        ? `${p.color || '#2563eb'}15` 
+                        ? `${p.color || getCSSVar('--color-accent', COLORS.accent)}15` 
                         : 'transparent'
                     }}
                   >
                     <span 
                       className="person-select-color"
-                      style={{ backgroundColor: p.color || '#2563eb' }}
+                      style={{ backgroundColor: p.color || getCSSVar('--color-accent', COLORS.accent) }}
                     />
                     <span className="person-select-name">{p.name}</span>
                     {isSelected && (

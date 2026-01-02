@@ -5,22 +5,30 @@
 }
 
 .app-header {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-gradient-start) 0%,
+    var(--color-primary-gradient-end) 100%
+  );
   color: white;
   padding: 2rem 2.5rem;
-  box-shadow: 0 4px 20px rgba(30, 64, 175, 0.2);
+  box-shadow: 0 4px 20px var(--shadow-primary);
   position: relative;
   overflow: hidden;
 }
 
 .app-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 100%
+  );
   pointer-events: none;
 }
 
@@ -75,4 +83,3 @@
   padding: 2.5rem;
   overflow: auto;
 }
-

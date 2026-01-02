@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Person, Task, Week } from '../types';
 import { personsApi, tasksApi, weeksApi } from '../services/api';
+import { getCSSVar, COLORS } from '../utils/colors';
 import TaskCell from './TaskCell';
 import PersonModal from './PersonModal';
 import './WeeklyTable.css';
@@ -259,7 +260,7 @@ export default function WeeklyTable() {
                   if (el) personRowsRef.current.set(person.id, el);
                 }}
                 className={`person-row ${draggedPersonId === person.id ? 'dragging' : ''} ${dragOverPersonId === person.id ? 'drag-over' : ''}`}
-                style={{ borderLeftColor: person.color || '#2563eb' }}
+                style={{ borderLeftColor: person.color || getCSSVar('--color-accent', COLORS.accent) }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, person.id)}
                 onDragOver={(e) => handleDragOver(e, person.id)}
@@ -271,7 +272,7 @@ export default function WeeklyTable() {
                 <div className="person-info">
                   <div
                     className="person-color"
-                    style={{ backgroundColor: person.color || '#2563eb' }}
+                    style={{ backgroundColor: person.color || getCSSVar('--color-accent', COLORS.accent) }}
                   />
                   <span className="person-name">{person.name}</span>
                 </div>
