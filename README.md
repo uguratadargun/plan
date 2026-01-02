@@ -11,9 +11,22 @@ React ve Node.js ile geliştirilmiş haftalık iş planlama uygulaması. Tablo f
 - 🔄 Güncel hafta vurgusu (timeline)
 - 💾 JSON dosya tabanlı veri saklama
 
-## Kurulum
+## Deployment
 
-### Backend
+### Coolify ile Deploy
+
+Bu proje Coolify'da her servis için ayrı resource olarak deploy edilir.
+
+Detaylı talimatlar için [DEPLOYMENT.md](./DEPLOYMENT.md) dosyasına bakın.
+
+**Canlı Adresler:**
+- Frontend: https://plan.uguratadargun.com
+- Backend API: https://planback.uguratadargun.com/api
+- Backend Health: https://planback.uguratadargun.com/health
+
+### Yerel Geliştirme
+
+#### Backend
 
 ```bash
 cd backend
@@ -23,7 +36,7 @@ npm run dev
 
 Backend `http://localhost:5001` adresinde çalışacaktır.
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend
@@ -42,9 +55,10 @@ Frontend `http://localhost:3000` adresinde çalışacaktır.
 
 ## Teknolojiler
 
-- **Frontend**: React 18, TypeScript, Vite, Axios
+- **Frontend**: React 18, TypeScript, Vite, Axios, Nginx
 - **Backend**: Node.js, Express, TypeScript
 - **Veritabanı**: JSON dosya (backend/data/db.json)
+- **Deployment**: Coolify, Docker
 
 ## Proje Yapısı
 
@@ -56,13 +70,18 @@ project-management/
 │   │   ├── services/       # API servisleri
 │   │   ├── utils/         # Yardımcı fonksiyonlar
 │   │   └── types/         # TypeScript tipleri
+│   ├── Dockerfile         # Frontend production build
+│   ├── nginx.conf         # Nginx yapılandırması
 │   └── package.json
 ├── backend/
 │   ├── src/
 │   │   ├── routes/        # API route'ları
 │   │   ├── models/        # Veri modelleri
-│   │   └── db.ts          # Veritabanı yönetimi
+│   │   └── server.ts      # Express server
+│   ├── Dockerfile         # Backend production build
 │   └── package.json
+├── DEPLOYMENT.md          # Coolify deployment guide
 └── README.md
 ```
+
 
