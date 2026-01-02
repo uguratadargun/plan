@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Person, Task, Week } from '../types';
 
-// Use environment variable for API URL, fallback to /api for development
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// Use environment variable for API URL, fallback to production backend
+const API_URL = import.meta.env.VITE_API_URL || 'https://planback.uguratadargun.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
