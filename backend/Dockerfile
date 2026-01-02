@@ -40,9 +40,10 @@ ENV NODE_ENV=production
 # Expose port
 EXPOSE 5001
 
-# Health check - increased start period for server initialization
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:5001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+# Health check - disabled, let Coolify handle healthcheck
+# Node.js built-in http module can be unreliable in containers
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+#   CMD node -e "require('http').get('http://localhost:5001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Start server
 CMD ["node", "dist/server.js"]
