@@ -1,10 +1,21 @@
-import { Router } from 'express';
+import { Router } from "express";
+import { database } from "../db.js";
 
 const router = Router();
 
 const monthNames = [
-  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+  "Ocak",
+  "Şubat",
+  "Mart",
+  "Nisan",
+  "Mayıs",
+  "Haziran",
+  "Temmuz",
+  "Ağustos",
+  "Eylül",
+  "Ekim",
+  "Kasım",
+  "Aralık",
 ];
 
 function getMonday(date: Date): Date {
@@ -28,55 +39,90 @@ function formatWeekRange(startDate: Date, endDate: Date): string {
 }
 
 // GET /api/weeks
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   try {
     const today = new Date();
     const currentYear = today.getFullYear();
-    
+
+    // Get all tasks to find the date range
+    const allTasks = database.getTasks();
+    const taskDates: string[] = allTasks
+      .map((t) => t.weekStart)
+      .filter(Boolean);
+
+    // Find earliest and latest task dates
+    let earliestDate: Date | null = null;
+    let latestDate: Date | null = null;
+
+    if (taskDates.length > 0) {
+      const sortedDates = taskDates.sort();
+      earliestDate = new Date(sortedDates[0]);
+      latestDate = new Date(sortedDates[sortedDates.length - 1]);
+    }
+
     // Ocak'ın ilk Pazartesi'sini bul
     const januaryFirst = new Date(currentYear, 0, 1);
     const januaryFirstMonday = getMonday(januaryFirst);
-    
+
     // Bugünün Pazartesi'sini bul
     const todayMonday = getMonday(today);
-    
-    // Başlangıç tarihi: Ocak'ın ilk Pazartesi'si veya bugünün Pazartesi'si (hangisi daha geç ise)
-    const startMonday = januaryFirstMonday > todayMonday ? januaryFirstMonday : todayMonday;
-    
-    // Geçmişe 4 hafta (1 ay) ekle
-    const weeksBack = 4;
-    const actualStartMonday = new Date(startMonday);
-    actualStartMonday.setDate(startMonday.getDate() - (weeksBack * 7));
-    
-    // Geleceğe 52 hafta (1 yıl) ekle
-    const weeksForward = 52;
-    const totalWeeks = weeksBack + weeksForward;
-    
+
+    // Determine start date: earliest task date, January first Monday, or today's Monday (whichever is earliest)
+    let startMonday =
+      januaryFirstMonday > todayMonday ? januaryFirstMonday : todayMonday;
+
+    if (earliestDate) {
+      const earliestMonday = getMonday(earliestDate);
+      if (earliestMonday < startMonday) {
+        startMonday = earliestMonday;
+      }
+    }
+
+    // Determine end date: latest task date or today + 52 weeks (whichever is later)
+    let endMonday = new Date(todayMonday);
+    endMonday.setDate(endMonday.getDate() + 52 * 7); // 52 weeks forward
+
+    if (latestDate) {
+      const latestMonday = getMonday(latestDate);
+      // Add at least 4 weeks after latest task
+      const latestWithBuffer = new Date(latestMonday);
+      latestWithBuffer.setDate(latestWithBuffer.getDate() + 4 * 7);
+      if (latestWithBuffer > endMonday) {
+        endMonday = latestWithBuffer;
+      }
+    }
+
+    // Calculate total weeks needed
+    const weeksDiff = Math.ceil(
+      (endMonday.getTime() - startMonday.getTime()) / (7 * 24 * 60 * 60 * 1000)
+    );
+    const totalWeeks = Math.max(weeksDiff, 56); // At least 56 weeks (4 back + 52 forward)
+
     const weeks = [];
-    
+
     for (let i = 0; i < totalWeeks; i++) {
-      const weekMonday = new Date(actualStartMonday);
-      weekMonday.setDate(actualStartMonday.getDate() + (i * 7));
-      
+      const weekMonday = new Date(startMonday);
+      weekMonday.setDate(startMonday.getDate() + i * 7);
+
       const weekFriday = getFriday(weekMonday);
       const displayText = formatWeekRange(weekMonday, weekFriday);
-      
+
       // Bugünün bu hafta içinde olup olmadığını kontrol et
       const isCurrent = today >= weekMonday && today <= weekFriday;
-      
+
       weeks.push({
-        startDate: weekMonday.toISOString().split('T')[0],
-        endDate: weekFriday.toISOString().split('T')[0],
+        startDate: weekMonday.toISOString().split("T")[0],
+        endDate: weekFriday.toISOString().split("T")[0],
         displayText,
-        isCurrent
+        isCurrent,
       });
     }
-    
+
     res.json(weeks);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch weeks' });
+    console.error("Error generating weeks:", error);
+    res.status(500).json({ error: "Failed to fetch weeks" });
   }
 });
 
 export default router;
-
