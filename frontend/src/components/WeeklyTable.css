@@ -1,0 +1,264 @@
+.weekly-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.25rem;
+  color: #666;
+}
+
+.table-header {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-header-left {
+  width: 250px;
+  min-width: 250px;
+  padding: 1rem;
+  border-right: 2px solid #e0e0e0;
+  background: white;
+}
+
+.table-header-right {
+  flex: 1;
+  overflow-x: auto;
+}
+
+.week-headers {
+  display: flex;
+  min-width: 100%;
+}
+
+.week-header {
+  min-width: 150px;
+  padding: 1rem;
+  text-align: center;
+  border-right: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.week-header.current-week {
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  border-bottom: 3px solid #667eea;
+  font-weight: 600;
+}
+
+.week-title {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.current-indicator {
+  font-size: 0.75rem;
+  color: #667eea;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-body {
+  display: flex;
+  overflow-x: auto;
+}
+
+.persons-column {
+  width: 250px;
+  min-width: 250px;
+  border-right: 2px solid #e0e0e0;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.persons-column > .person-row {
+  flex-shrink: 0;
+}
+
+.person-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  border-left: 4px solid;
+  background: white;
+  transition: all 0.2s ease;
+  min-height: 80px;
+  box-sizing: border-box;
+  cursor: move;
+  user-select: none;
+}
+
+.person-row:hover {
+  background: #f8f9fa;
+}
+
+.person-row.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.person-row.drag-over {
+  border-top: 3px solid #667eea;
+  background: #f0f4ff;
+}
+
+.person-drag-handle {
+  color: #999;
+  font-size: 1.2rem;
+  cursor: grab;
+  padding: 0 0.5rem;
+  margin-right: 0.5rem;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.person-row.dragging .person-drag-handle {
+  cursor: grabbing;
+}
+
+.person-drag-handle:hover {
+  color: #667eea;
+}
+
+.person-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.person-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.person-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.person-edit-btn {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.person-row:hover .person-edit-btn {
+  opacity: 1;
+}
+
+.person-edit-btn:hover {
+  background: #f0f0f0;
+  color: #667eea;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.tasks-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: auto;
+}
+
+.tasks-grid .person-tasks-row {
+  flex-shrink: 0;
+}
+
+.person-tasks-row {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: stretch;
+  min-height: 80px;
+}
+
+.person-tasks-row .task-cell {
+  flex: 1;
+  min-width: 150px;
+}
+
+.btn-add-person {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.btn-add-person:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Scrollbar styling */
+.table-body::-webkit-scrollbar,
+.table-header-right::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-body::-webkit-scrollbar-track,
+.table-header-right::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-body::-webkit-scrollbar-thumb,
+.table-header-right::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-body::-webkit-scrollbar-thumb:hover,
+.table-header-right::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-header-left {
+    width: 200px;
+    min-width: 200px;
+  }
+  
+  .persons-column {
+    width: 200px;
+    min-width: 200px;
+  }
+  
+  .week-header {
+    min-width: 120px;
+  }
+}
+
