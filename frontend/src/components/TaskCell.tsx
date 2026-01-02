@@ -7,11 +7,12 @@ import './TaskCell.css';
 interface TaskCellProps {
   tasks: Task[];
   person: Person;
+  persons: Person[];
   weekStart: string;
   onTaskUpdate: () => void;
 }
 
-export default function TaskCell({ tasks, person, weekStart, onTaskUpdate }: TaskCellProps) {
+export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpdate }: TaskCellProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [hoveredTask, setHoveredTask] = useState<Task | null>(null);
@@ -146,6 +147,7 @@ export default function TaskCell({ tasks, person, weekStart, onTaskUpdate }: Tas
         <TaskModal
           task={editingTask}
           person={person}
+          persons={persons}
           weekStart={weekStart}
           onClose={handleClose}
         />
@@ -154,7 +156,7 @@ export default function TaskCell({ tasks, person, weekStart, onTaskUpdate }: Tas
       {hoveredTask && (
         <TaskDetailPanel
           task={hoveredTask}
-          person={person}
+          persons={persons}
           position={hoverPosition}
           onClose={handlePanelClose}
         />

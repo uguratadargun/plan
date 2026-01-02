@@ -85,8 +85,15 @@ export const database = {
     const index = db.persons.findIndex(p => p.id === id);
     if (index === -1) return false;
     db.persons.splice(index, 1);
-    // Also delete all tasks for this person
-    db.tasks = db.tasks.filter(t => t.personId !== id);
+    // Also remove this person from all tasks and delete tasks with no persons
+    db.tasks = db.tasks.map(t => {
+      const personIds = t.personIds || (t.personId ? [t.personId] : []);
+      const newPersonIds = personIds.filter(pid => pid !== id);
+      if (newPersonIds.length === 0) {
+        return null; // Mark for deletion
+      }
+      return { ...t, personIds: newPersonIds, personId: undefined };
+    }).filter(t => t !== null) as Task[];
     saveDB();
     return true;
   },
@@ -95,8 +102,19 @@ export const database = {
     loadDB();
     let tasks = db.tasks;
     
+    // Backward compatibility: convert personId to personIds
+    tasks = tasks.map(task => {
+      if (task.personId && !task.personIds) {
+        return { ...task, personIds: [task.personId], personId: undefined };
+      }
+      return task;
+    });
+    
     if (filters?.personId) {
-      tasks = tasks.filter(t => t.personId === filters.personId);
+      tasks = tasks.filter(t => {
+        const personIds = t.personIds || (t.personId ? [t.personId] : []);
+        return personIds.includes(filters.personId!);
+      });
     }
     
     if (filters?.weekStart) {

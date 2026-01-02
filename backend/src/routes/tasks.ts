@@ -23,18 +23,21 @@ router.get('/', (req, res) => {
 // POST /api/tasks
 router.post('/', (req, res) => {
   try {
-    const { personId, weekStart, name, description, status } = req.body;
+    const { personIds, personId, weekStart, name, description, status } = req.body;
     
-    if (!personId || !weekStart || !name) {
-      return res.status(400).json({ error: 'personId, weekStart, and name are required' });
+    // Backward compatibility: support both personIds and personId
+    const finalPersonIds = personIds || (personId ? [personId] : []);
+    
+    if (!finalPersonIds.length || !weekStart || !name) {
+      return res.status(400).json({ error: 'personIds (or personId), weekStart, and name are required' });
     }
     
     const task: Task = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      personId,
+      personIds: finalPersonIds,
       weekStart,
       name,
-      description: description || '',
+      description: description || undefined,
       status: status || 'pending'
     };
     

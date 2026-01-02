@@ -3,14 +3,18 @@ import './TaskDetailPanel.css';
 
 interface TaskDetailPanelProps {
   task: Task;
-  person: Person;
+  persons: Person[];
   position: { x: number; y: number };
   onClose: () => void;
 }
 
-export default function TaskDetailPanel({ task, person, position, onClose }: TaskDetailPanelProps) {
+export default function TaskDetailPanel({ task, persons, position, onClose }: TaskDetailPanelProps) {
   const taskName = task.name || task.description || '';
   const taskDescription = task.description || '';
+  // Backward compatibility: support both personIds and personId
+  const taskPersonIds = task.personIds || (task.personId ? [task.personId] : []);
+  const taskPersons = persons.filter(p => taskPersonIds.includes(p.id));
+  
   const statusLabels = {
     'pending': 'Beklemede',
     'in-progress': 'Devam Ediyor',
@@ -36,9 +40,20 @@ export default function TaskDetailPanel({ task, person, position, onClose }: Tas
           <div className="task-detail-title-section">
             <h3 className="task-detail-name">{taskName}</h3>
             <div className="task-detail-meta">
-              <span className="task-detail-person" style={{ color: person.color || '#667eea' }}>
-                {person.name}
-              </span>
+              <div className="task-detail-persons">
+                {taskPersons.map((p) => (
+                  <span 
+                    key={p.id}
+                    className="task-detail-person" 
+                    style={{ 
+                      color: p.color || '#667eea',
+                      backgroundColor: `${p.color || '#667eea'}15`
+                    }}
+                  >
+                    {p.name}
+                  </span>
+                ))}
+              </div>
               <span className={`task-detail-status task-status-${task.status || 'pending'}`}>
                 {statusLabels[task.status || 'pending']}
               </span>

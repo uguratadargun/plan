@@ -149,9 +149,11 @@ export default function WeeklyTable() {
   };
 
   const getTasksForCell = (personId: string, weekStart: string): Task[] => {
-    return tasks.filter(
-      task => task.personId === personId && task.weekStart === weekStart
-    );
+    return tasks.filter(task => {
+      // Backward compatibility: support both personIds and personId
+      const taskPersonIds = task.personIds || (task.personId ? [task.personId] : []);
+      return taskPersonIds.includes(personId) && task.weekStart === weekStart;
+    });
   };
 
   const [draggedPersonId, setDraggedPersonId] = useState<string | null>(null);
@@ -303,6 +305,7 @@ export default function WeeklyTable() {
                     key={`${person.id}-${week.startDate}`}
                     tasks={getTasksForCell(person.id, week.startDate)}
                     person={person}
+                    persons={persons}
                     weekStart={week.startDate}
                     onTaskUpdate={loadData}
                   />

@@ -63,11 +63,16 @@
   flex-wrap: wrap;
 }
 
+.task-detail-persons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .task-detail-person {
   font-size: 0.875rem;
   font-weight: 500;
   padding: 0.25rem 0.75rem;
-  background: rgba(102, 126, 234, 0.1);
   border-radius: 12px;
 }
 
@@ -157,4 +162,3 @@
 .task-detail-content::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-

@@ -5,18 +5,22 @@ import './Modal.css';
 
 interface TaskModalProps {
   task: Task | null;
-  person: Person;
+  person: Person; // Default person when creating from a cell
+  persons: Person[]; // All persons for multi-select
   weekStart: string;
   onClose: () => void;
 }
 
-export default function TaskModal({ task, person, weekStart, onClose }: TaskModalProps) {
+export default function TaskModal({ task, person, persons, weekStart, onClose }: TaskModalProps) {
   // Backward compatibility: if name doesn't exist, use description as name
   const initialName = task?.name || task?.description || '';
   const initialDescription = task?.description || '';
+  // Backward compatibility: support both personIds and personId
+  const initialPersonIds = task?.personIds || (task?.personId ? [task.personId] : [person.id]);
   
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
+  const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>(initialPersonIds);
   const [status, setStatus] = useState<Task['status']>(task?.status || 'pending');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -24,19 +28,39 @@ export default function TaskModal({ task, person, weekStart, onClose }: TaskModa
     if (task) {
       setName(task.name || task.description || '');
       setDescription(task.description || '');
+      const taskPersonIds = task.personIds || (task.personId ? [task.personId] : []);
+      setSelectedPersonIds(taskPersonIds);
       setStatus(task.status || 'pending');
     } else {
       setName('');
       setDescription('');
+      setSelectedPersonIds([person.id]);
       setStatus('pending');
     }
-  }, [task]);
+  }, [task, person]);
+
+  const handlePersonToggle = (personId: string) => {
+    setSelectedPersonIds(prev => {
+      if (prev.includes(personId)) {
+        // Don't allow removing the last person
+        if (prev.length === 1) return prev;
+        return prev.filter(id => id !== personId);
+      } else {
+        return [...prev, personId];
+      }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name.trim()) {
       alert('Lütfen iş adı girin');
+      return;
+    }
+
+    if (selectedPersonIds.length === 0) {
+      alert('En az bir kişi seçmelisiniz');
       return;
     }
 
@@ -47,12 +71,13 @@ export default function TaskModal({ task, person, weekStart, onClose }: TaskModa
         await tasksApi.update(task.id, { 
           name: name.trim(), 
           description: description.trim() || undefined,
+          personIds: selectedPersonIds,
           status 
         });
       } else {
         // Create new task
         await tasksApi.create({
-          personId: person.id,
+          personIds: selectedPersonIds,
           weekStart,
           name: name.trim(),
           description: description.trim() || undefined,
@@ -92,8 +117,36 @@ export default function TaskModal({ task, person, weekStart, onClose }: TaskModa
         
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
-            <label>Kişi</label>
-            <input type="text" value={person.name} disabled />
+            <label>Kişiler *</label>
+            <div className="person-selector">
+              {persons.map((p) => {
+                const isSelected = selectedPersonIds.includes(p.id);
+                const isDisabled = selectedPersonIds.length === 1 && isSelected;
+                
+                return (
+                  <div
+                    key={p.id}
+                    className={`person-select-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                    onClick={() => !isDisabled && handlePersonToggle(p.id)}
+                    style={{ 
+                      borderLeftColor: p.color || '#667eea',
+                      backgroundColor: isSelected 
+                        ? `${p.color || '#667eea'}15` 
+                        : 'transparent'
+                    }}
+                  >
+                    <span 
+                      className="person-select-color"
+                      style={{ backgroundColor: p.color || '#667eea' }}
+                    />
+                    <span className="person-select-name">{p.name}</span>
+                    {isSelected && (
+                      <span className="person-select-check">✓</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
           
           <div className="form-group">
