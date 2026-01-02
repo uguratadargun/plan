@@ -55,31 +55,37 @@ Coolify'da her iki servis de aynı network'te olmalı. Eğer docker-compose kull
 ## Environment Variables
 
 ### Backend
+
 - `PORT`: Server port (default: 5001)
 - `NODE_ENV`: Environment (production)
 
 ### Frontend
+
 - `VITE_API_URL`: Backend API URL (örn: `https://api.yourdomain.com/api`)
 
 ## Database Persistence
 
 Backend'in `data` klasörü volume olarak mount edilmelidir. Coolify'da:
+
 - Volume Name: `backend-data`
 - Mount Path: `/app/data`
 
 ## Health Checks
 
 Her iki servis de health check endpoint'leri içerir:
+
 - Backend: `http://localhost:5001/health`
 - Frontend: `http://localhost/`
 
 ## Troubleshooting
 
-1. **Frontend backend'e bağlanamıyor**: 
+1. **Frontend backend'e bağlanamıyor**:
+
    - `VITE_API_URL` environment variable'ının doğru olduğundan emin olun
    - Backend'in public URL'ini kontrol edin
 
 2. **Database kayboluyor**:
+
    - Volume mount'un doğru yapıldığından emin olun
    - `/app/data` path'inin writable olduğundan emin olun
 
@@ -94,4 +100,3 @@ Her iki servis de health check endpoint'leri içerir:
    - Frontend: `https://app.yourdomain.com`
    - Backend: `https://api.yourdomain.com`
 3. Database için daha güvenli bir çözüm (PostgreSQL, MongoDB) kullanmayı düşünün
-
