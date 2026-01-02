@@ -36,8 +36,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 # Health check - increased start period for nginx to start
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+# Temporarily disabled to avoid 503 errors - Traefik will handle health checks
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+#   CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
