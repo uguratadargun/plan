@@ -102,13 +102,49 @@ export const database = {
     loadDB();
     let tasks = db.tasks;
     
-    // Backward compatibility: convert personId to personIds
+    // Generate random color function
+    const generateRandomColor = (): string => {
+      const colors = [
+        '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981',
+        '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#a855f7',
+        '#ef4444', '#84cc16'
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    };
+    
+    let needsSave = false;
+    
+    // Backward compatibility: convert personId to personIds and add color if missing
     tasks = tasks.map(task => {
+      let updatedTask = { ...task };
+      let taskNeedsUpdate = false;
+      
       if (task.personId && !task.personIds) {
-        return { ...task, personIds: [task.personId], personId: undefined };
+        updatedTask = { ...updatedTask, personIds: [task.personId], personId: undefined };
+        taskNeedsUpdate = true;
       }
-      return task;
+      
+      if (!updatedTask.color) {
+        updatedTask = { ...updatedTask, color: generateRandomColor() };
+        taskNeedsUpdate = true;
+      }
+      
+      if (taskNeedsUpdate) {
+        needsSave = true;
+        // Update task in database
+        const index = db.tasks.findIndex(t => t.id === task.id);
+        if (index !== -1) {
+          db.tasks[index] = updatedTask;
+        }
+      }
+      
+      return updatedTask;
     });
+    
+    // Save if any tasks were updated
+    if (needsSave) {
+      saveDB();
+    }
     
     if (filters?.personId) {
       tasks = tasks.filter(t => {

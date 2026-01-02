@@ -259,7 +259,7 @@ export default function WeeklyTable() {
                   if (el) personRowsRef.current.set(person.id, el);
                 }}
                 className={`person-row ${draggedPersonId === person.id ? 'dragging' : ''} ${dragOverPersonId === person.id ? 'drag-over' : ''}`}
-                style={{ borderLeftColor: person.color || '#667eea' }}
+                style={{ borderLeftColor: person.color || '#2563eb' }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, person.id)}
                 onDragOver={(e) => handleDragOver(e, person.id)}
@@ -271,7 +271,7 @@ export default function WeeklyTable() {
                 <div className="person-info">
                   <div
                     className="person-color"
-                    style={{ backgroundColor: person.color || '#667eea' }}
+                    style={{ backgroundColor: person.color || '#2563eb' }}
                   />
                   <span className="person-name">{person.name}</span>
                 </div>

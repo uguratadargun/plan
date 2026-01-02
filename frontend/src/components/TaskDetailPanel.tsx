@@ -14,12 +14,7 @@ export default function TaskDetailPanel({ task, persons, position, onClose }: Ta
   // Backward compatibility: support both personIds and personId
   const taskPersonIds = task.personIds || (task.personId ? [task.personId] : []);
   const taskPersons = persons.filter(p => taskPersonIds.includes(p.id));
-  
-  const statusLabels = {
-    'pending': 'Beklemede',
-    'in-progress': 'Devam Ediyor',
-    'completed': 'Tamamlandı'
-  };
+  const taskColor = task.color || '#3b82f6';
 
   return (
     <div 
@@ -36,7 +31,10 @@ export default function TaskDetailPanel({ task, persons, position, onClose }: Ta
         onMouseEnter={(e) => e.stopPropagation()}
         onMouseLeave={onClose}
       >
-        <div className="task-detail-header">
+        <div 
+          className="task-detail-header"
+          style={{ borderLeftColor: taskColor }}
+        >
           <div className="task-detail-title-section">
             <h3 className="task-detail-name">{taskName}</h3>
             <div className="task-detail-meta">
@@ -46,17 +44,14 @@ export default function TaskDetailPanel({ task, persons, position, onClose }: Ta
                     key={p.id}
                     className="task-detail-person" 
                     style={{ 
-                      color: p.color || '#667eea',
-                      backgroundColor: `${p.color || '#667eea'}15`
+                      color: p.color || '#2563eb',
+                      backgroundColor: `${p.color || '#2563eb'}15`
                     }}
                   >
                     {p.name}
                   </span>
                 ))}
               </div>
-              <span className={`task-detail-status task-status-${task.status || 'pending'}`}>
-                {statusLabels[task.status || 'pending']}
-              </span>
             </div>
           </div>
           <button className="task-detail-close" onClick={onClose}>×</button>

@@ -10,13 +10,13 @@ interface PersonModalProps {
 
 export default function PersonModal({ person, onClose }: PersonModalProps) {
   const [name, setName] = useState(person?.name || '');
-  const [color, setColor] = useState(person?.color || '#667eea');
+  const [color, setColor] = useState(person?.color || '#2563eb');
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (person) {
       setName(person.name);
-      setColor(person.color || '#667eea');
+      setColor(person.color || '#2563eb');
     }
   }, [person]);
 
@@ -92,7 +92,7 @@ export default function PersonModal({ person, onClose }: PersonModalProps) {
                 type="text"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                placeholder="#667eea"
+                placeholder="#2563eb"
               />
             </div>
           </div>

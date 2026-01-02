@@ -125,11 +125,18 @@ export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpda
                 const taskName = task.name || task.description || '';
                 const taskDescription = task.description || '';
                 const hasDescription = taskDescription && taskDescription !== taskName;
+                // Backward compatibility: if color doesn't exist, generate one or use default
+                const taskColor = task.color || '#3b82f6';
                 
                 return (
                   <div
                     key={task.id}
-                    className={`task-item task-${task.status || 'pending'}`}
+                    className="task-item"
+                    style={{
+                      borderLeftColor: taskColor,
+                      backgroundColor: `${taskColor}15`,
+                      color: taskColor
+                    }}
                     onClick={(e) => handleTaskClick(e, task)}
                     onMouseEnter={(e) => hasDescription && handleTaskMouseEnter(e, task)}
                     onMouseLeave={handleTaskMouseLeave}

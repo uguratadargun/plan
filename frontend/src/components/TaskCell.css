@@ -1,10 +1,10 @@
 .task-cell {
   min-height: 80px;
   padding: 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e2e8f0;
   background: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -13,26 +13,30 @@
   align-items: stretch;
 }
 
-.task-count-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: #667eea;
-  color: white;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-weight: 600;
-  z-index: 5;
+.task-cell:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-color: #2563eb;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
 }
 
-.task-cell:hover {
-  background: #f8f9fa;
-  border-color: #667eea;
+.task-count-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+  font-size: 0.6875rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  z-index: 5;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  letter-spacing: 0.3px;
 }
 
 .task-cell-empty {
-  color: #999;
+  color: #94a3b8;
   font-size: 0.875rem;
   text-align: center;
   font-style: italic;
@@ -40,6 +44,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1.5rem 0;
+  transition: all 0.2s ease;
+}
+
+.task-cell:hover .task-cell-empty {
+  color: #64748b;
+  transform: scale(1.02);
 }
 
 .task-list {
@@ -51,20 +62,24 @@
 }
 
 .task-item {
-  padding: 6px 8px;
-  border-radius: 4px;
+  padding: 0.625rem 0.875rem;
+  border-radius: 8px;
   font-size: 0.875rem;
-  background: #f0f0f0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   word-break: break-word;
   position: relative;
   overflow: hidden;
+  border: 1px solid transparent;
+  border-left-width: 4px;
+  font-weight: 500;
 }
 
 .task-item:hover {
-  background: #e0e0e0;
-  transform: translateX(2px);
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: currentColor;
+  opacity: 0.9;
 }
 
 .task-name {
@@ -101,20 +116,4 @@
   transform: translateX(-50%) translateY(-12px);
 }
 
-.task-pending {
-  background: #fff3cd;
-  border-left: 3px solid #ffc107;
-}
-
-.task-in-progress {
-  background: #cfe2ff;
-  border-left: 3px solid #0d6efd;
-}
-
-.task-completed {
-  background: #d1e7dd;
-  border-left: 3px solid #198754;
-  text-decoration: line-through;
-  opacity: 0.8;
-}
 

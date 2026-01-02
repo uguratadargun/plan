@@ -11,17 +11,37 @@ interface TaskModalProps {
   onClose: () => void;
 }
 
+// Generate random color from a nice palette
+function generateRandomColor(): string {
+  const colors = [
+    '#3b82f6', // Blue
+    '#8b5cf6', // Purple
+    '#ec4899', // Pink
+    '#f59e0b', // Amber
+    '#10b981', // Emerald
+    '#06b6d4', // Cyan
+    '#f97316', // Orange
+    '#6366f1', // Indigo
+    '#14b8a6', // Teal
+    '#a855f7', // Violet
+    '#ef4444', // Red
+    '#84cc16', // Lime
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 export default function TaskModal({ task, person, persons, weekStart, onClose }: TaskModalProps) {
   // Backward compatibility: if name doesn't exist, use description as name
   const initialName = task?.name || task?.description || '';
   const initialDescription = task?.description || '';
   // Backward compatibility: support both personIds and personId
   const initialPersonIds = task?.personIds || (task?.personId ? [task.personId] : [person.id]);
+  const initialColor = task?.color || generateRandomColor();
   
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
   const [selectedPersonIds, setSelectedPersonIds] = useState<string[]>(initialPersonIds);
-  const [status, setStatus] = useState<Task['status']>(task?.status || 'pending');
+  const [color, setColor] = useState<string>(initialColor);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -30,12 +50,14 @@ export default function TaskModal({ task, person, persons, weekStart, onClose }:
       setDescription(task.description || '');
       const taskPersonIds = task.personIds || (task.personId ? [task.personId] : []);
       setSelectedPersonIds(taskPersonIds);
-      setStatus(task.status || 'pending');
+      // Use existing color, don't generate new one
+      setColor(task.color || '#3b82f6');
     } else {
       setName('');
       setDescription('');
       setSelectedPersonIds([person.id]);
-      setStatus('pending');
+      // Only generate random color for new tasks
+      setColor(generateRandomColor());
     }
   }, [task, person]);
 
@@ -72,7 +94,7 @@ export default function TaskModal({ task, person, persons, weekStart, onClose }:
           name: name.trim(), 
           description: description.trim() || undefined,
           personIds: selectedPersonIds,
-          status 
+          color
         });
       } else {
         // Create new task
@@ -81,7 +103,7 @@ export default function TaskModal({ task, person, persons, weekStart, onClose }:
           weekStart,
           name: name.trim(),
           description: description.trim() || undefined,
-          status
+          color
         });
       }
       onClose();
@@ -129,15 +151,15 @@ export default function TaskModal({ task, person, persons, weekStart, onClose }:
                     className={`person-select-item ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
                     onClick={() => !isDisabled && handlePersonToggle(p.id)}
                     style={{ 
-                      borderLeftColor: p.color || '#667eea',
+                      borderLeftColor: p.color || '#2563eb',
                       backgroundColor: isSelected 
-                        ? `${p.color || '#667eea'}15` 
+                        ? `${p.color || '#2563eb'}15` 
                         : 'transparent'
                     }}
                   >
                     <span 
                       className="person-select-color"
-                      style={{ backgroundColor: p.color || '#667eea' }}
+                      style={{ backgroundColor: p.color || '#2563eb' }}
                     />
                     <span className="person-select-name">{p.name}</span>
                     {isSelected && (
@@ -171,15 +193,28 @@ export default function TaskModal({ task, person, persons, weekStart, onClose }:
           </div>
           
           <div className="form-group">
-            <label>Durum</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value as Task['status'])}
-            >
-              <option value="pending">Beklemede</option>
-              <option value="in-progress">Devam Ediyor</option>
-              <option value="completed">Tamamlandı</option>
-            </select>
+            <label>Renk</label>
+            <div className="color-picker-group">
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+              />
+              <input
+                type="text"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                placeholder="#3b82f6"
+              />
+              <button
+                type="button"
+                className="btn-random-color"
+                onClick={() => setColor(generateRandomColor())}
+                title="Rastgele Renk"
+              >
+                🎲
+              </button>
+            </div>
           </div>
           
           <div className="modal-actions">

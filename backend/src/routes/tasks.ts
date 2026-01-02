@@ -20,10 +20,29 @@ router.get('/', (req, res) => {
   }
 });
 
+// Generate random color from a nice palette
+function generateRandomColor(): string {
+  const colors = [
+    '#3b82f6', // Blue
+    '#8b5cf6', // Purple
+    '#ec4899', // Pink
+    '#f59e0b', // Amber
+    '#10b981', // Emerald
+    '#06b6d4', // Cyan
+    '#f97316', // Orange
+    '#6366f1', // Indigo
+    '#14b8a6', // Teal
+    '#a855f7', // Violet
+    '#ef4444', // Red
+    '#84cc16', // Lime
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 // POST /api/tasks
 router.post('/', (req, res) => {
   try {
-    const { personIds, personId, weekStart, name, description, status } = req.body;
+    const { personIds, personId, weekStart, name, description, color } = req.body;
     
     // Backward compatibility: support both personIds and personId
     const finalPersonIds = personIds || (personId ? [personId] : []);
@@ -38,7 +57,7 @@ router.post('/', (req, res) => {
       weekStart,
       name,
       description: description || undefined,
-      status: status || 'pending'
+      color: color || generateRandomColor()
     };
     
     const created = database.addTask(task);
