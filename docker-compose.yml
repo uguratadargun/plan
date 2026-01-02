@@ -4,6 +4,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: weekly-planner-backend
+    labels:
+      - "coolify.managed=true"
+      - "coolify.service=backend"
     expose:
       - "5001"
     environment:
@@ -34,6 +37,9 @@ services:
       args:
         - VITE_API_URL=${VITE_API_URL:-/api}
     container_name: weekly-planner-frontend
+    labels:
+      - "coolify.managed=true"
+      - "coolify.service=frontend"
     expose:
       - "80"
     depends_on:
