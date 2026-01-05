@@ -117,6 +117,35 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   letter-spacing: 0.1px;
+  margin-bottom: 1rem;
+}
+
+.task-detail-epic {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.task-detail-epic-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  background: #eff6ff;
+  transition: all 0.2s ease;
+  border: 1px solid #dbeafe;
+}
+
+.task-detail-epic-link:hover {
+  background: #dbeafe;
+  color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
 .task-detail-empty {

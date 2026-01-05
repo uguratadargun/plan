@@ -318,6 +318,23 @@
 }
 
 /* Person selector */
+.person-selector-section {
+  margin-bottom: 1.25rem;
+}
+
+.person-selector-section:last-child {
+  margin-bottom: 0;
+}
+
+.person-selector-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .person-selector {
   display: flex;
   flex-direction: column;
@@ -328,6 +345,12 @@
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   background: #f8fafc;
+}
+
+.person-selector.assigned-persons {
+  background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+  border-color: #bbf7d0;
+  border-width: 2px;
 }
 
 .person-select-item {
@@ -402,5 +425,93 @@
 
 .person-selector::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Epic URL Input */
+.epic-url-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.epic-url-input-wrapper:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.epic-url-input-wrapper:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--shadow-focus);
+  background: var(--color-bg-primary);
+}
+
+.epic-url-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fc6d26;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.epic-url-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1e293b;
+  padding: 0;
+}
+
+.epic-url-input::placeholder {
+  color: #94a3b8;
+}
+
+.epic-url-test-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #3b82f6;
+  background: #eff6ff;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  text-decoration: none;
+  border: 1px solid #dbeafe;
+}
+
+.epic-url-test-link:hover {
+  background: #dbeafe;
+  color: #2563eb;
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.epic-url-preview {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+  padding: 0.5rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  border-left: 3px solid #3b82f6;
+}
+
+.epic-url-preview span {
+  color: #1e293b;
+  font-weight: 500;
+  word-break: break-all;
 }
 

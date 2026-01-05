@@ -58,15 +58,30 @@ export default function TaskDetailPanel({ task, persons, position, onClose }: Ta
           <button className="task-detail-close" onClick={onClose}>×</button>
         </div>
         
-        {taskDescription && (
+        {(taskDescription || task.epicUrl) && (
           <div className="task-detail-content">
-            <div className="task-detail-description">
-              {taskDescription}
-            </div>
+            {taskDescription && (
+              <div className="task-detail-description">
+                {taskDescription}
+              </div>
+            )}
+            {task.epicUrl && (
+              <div className="task-detail-epic">
+                <a 
+                  href={task.epicUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="task-detail-epic-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  🔗 Epic'i GitLab'da Aç
+                </a>
+              </div>
+            )}
           </div>
         )}
         
-        {!taskDescription && (
+        {!taskDescription && !task.epicUrl && (
           <div className="task-detail-empty">
             Detaylı açıklama eklenmemiş
           </div>

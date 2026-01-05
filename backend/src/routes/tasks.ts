@@ -42,7 +42,7 @@ function generateRandomColor(): string {
 // POST /api/tasks
 router.post('/', (req, res) => {
   try {
-    const { personIds, personId, weekStart, name, description, color } = req.body;
+    const { personIds, personId, weekStart, name, description, color, epicUrl } = req.body;
     
     // Backward compatibility: support both personIds and personId
     const finalPersonIds = personIds || (personId ? [personId] : []);
@@ -57,7 +57,8 @@ router.post('/', (req, res) => {
       weekStart,
       name,
       description: description || undefined,
-      color: color || generateRandomColor()
+      color: color || generateRandomColor(),
+      epicUrl: epicUrl || undefined
     };
     
     const created = database.addTask(task);
