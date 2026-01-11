@@ -4,6 +4,7 @@ import { personsApi, tasksApi, weeksApi, dataApi } from '../services/api';
 import { getCSSVar, COLORS } from '../utils/colors';
 import TaskCell from './TaskCell';
 import PersonModal from './PersonModal';
+import GanttView from './GanttView';
 import './WeeklyTable.css';
 
 export default function WeeklyTable() {
@@ -26,6 +27,7 @@ export default function WeeklyTable() {
   const resizeStartWidthRef = useRef<number>(0);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'gantt'>('table');
 
   useEffect(() => {
     loadData();
@@ -50,6 +52,9 @@ export default function WeeklyTable() {
   }, []);
 
   useEffect(() => {
+    if (viewMode !== 'table') {
+      return;
+    }
     // Sync person row heights with task row heights
     const syncHeights = () => {
       taskRowsRef.current.forEach((taskRow, personId) => {
@@ -137,7 +142,7 @@ export default function WeeklyTable() {
         bodyScroll.removeEventListener('scroll', syncScrollFromBody);
       }
     };
-  }, [persons, tasks, weeks, isLoading]);
+  }, [persons, tasks, weeks, isLoading, viewMode]);
 
   const loadData = async () => {
     try {
@@ -429,6 +434,20 @@ export default function WeeklyTable() {
   return (
     <>
       <div className="data-actions-panel">
+        <div className="view-toggle">
+          <button
+            className={`btn-secondary ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => setViewMode('table')}
+          >
+            Tablo
+          </button>
+          <button
+            className={`btn-secondary ${viewMode === 'gantt' ? 'active' : ''}`}
+            onClick={() => setViewMode('gantt')}
+          >
+            Gantt
+          </button>
+        </div>
         <div className="data-actions">
           <button
             className="btn-secondary"
@@ -454,137 +473,150 @@ export default function WeeklyTable() {
         </div>
       </div>
       <div className="weekly-table-container">
-        <div className="table-header">
-          <div 
-            className="table-header-left"
-            style={{ width: `${personsColumnWidth}px` }}
-          >
-            <div className="table-toolbar">
-              <button className="btn-add-person" onClick={handleAddPerson}>
-                + Kişi Ekle
-              </button>
-            </div>
-          </div>
-          <div 
-            className="resize-handle"
-            onMouseDown={(e) => handleResizeStart(e, 'persons')}
-            onDoubleClick={(e) => handleResizeDoubleClick(e, 'persons')}
-          />
-          <div className="table-header-right" ref={headerScrollRef}>
-            <div className="week-headers">
-              {weeks.map((week, index) => (
-                <Fragment key={week.startDate}>
-                  <div
-                    ref={(el) => {
-                      if (el) weekHeadersRef.current.set(week.startDate, el);
-                    }}
-                    className={`week-header ${week.isCurrent ? 'current-week' : ''}`}
-                    style={{ 
-                      width: weekWidths.get(week.startDate) 
-                        ? `${weekWidths.get(week.startDate)}px` 
-                        : undefined,
-                      flex: weekWidths.get(week.startDate) ? '0 0 auto' : undefined
-                    }}
-                  >
-                    <div className="week-title">{week.displayText}</div>
-                    {week.isCurrent && (
-                      <div className="current-indicator">Bugün</div>
-                    )}
-                  </div>
-                  {index < weeks.length - 1 && (
-                    <div 
-                      className="resize-handle week-resize-handle"
-                      onMouseDown={(e) => handleResizeStart(e, week.startDate)}
-                      onDoubleClick={(e) => handleResizeDoubleClick(e, week.startDate)}
-                    />
-                  )}
-                </Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="table-body">
-          <div 
-            className="persons-column"
-            style={{ width: `${personsColumnWidth}px` }}
-          >
-            {persons.map((person) => (
-              <div
-                key={person.id}
-                ref={(el) => {
-                  if (el) personRowsRef.current.set(person.id, el);
-                }}
-                className={`person-row ${draggedPersonId === person.id ? 'dragging' : ''} ${dragOverPersonId === person.id ? 'drag-over' : ''}`}
-                style={{ borderLeftColor: person.color || getCSSVar('--color-accent', COLORS.accent) }}
-                draggable
-                onDragStart={(e) => handleDragStart(e, person.id)}
-                onDragOver={(e) => handleDragOver(e, person.id)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, person.id)}
-                onDragEnd={handleDragEnd}
+        {viewMode === 'table' ? (
+          <>
+            <div className="table-header">
+              <div 
+                className="table-header-left"
+                style={{ width: `${personsColumnWidth}px` }}
               >
-                <div className="person-drag-handle">⋮⋮</div>
-                <div className="person-info">
-                  <div
-                    className="person-color"
-                    style={{ backgroundColor: person.color || getCSSVar('--color-accent', COLORS.accent) }}
-                  />
-                  <span className="person-name">{person.name}</span>
+                <div className="table-toolbar">
+                  <button className="btn-add-person" onClick={handleAddPerson}>
+                    + Kişi Ekle
+                  </button>
                 </div>
-                <button
-                  className="person-edit-btn"
-                  onClick={() => handleEditPerson(person)}
-                  title="Düzenle"
-                >
-                  ✎
-                </button>
               </div>
-            ))}
-            {persons.length === 0 && (
-              <div className="empty-state">
-                Henüz kişi eklenmemiş. Kişi eklemek için yukarıdaki butona tıklayın.
+              <div 
+                className="resize-handle"
+                onMouseDown={(e) => handleResizeStart(e, 'persons')}
+                onDoubleClick={(e) => handleResizeDoubleClick(e, 'persons')}
+              />
+              <div className="table-header-right" ref={headerScrollRef}>
+                <div className="week-headers">
+                  {weeks.map((week, index) => (
+                    <Fragment key={week.startDate}>
+                      <div
+                        ref={(el) => {
+                          if (el) weekHeadersRef.current.set(week.startDate, el);
+                        }}
+                        className={`week-header ${week.isCurrent ? 'current-week' : ''}`}
+                        style={{ 
+                          width: weekWidths.get(week.startDate) 
+                            ? `${weekWidths.get(week.startDate)}px` 
+                            : undefined,
+                          flex: weekWidths.get(week.startDate) ? '0 0 auto' : undefined
+                        }}
+                      >
+                        <div className="week-title">{week.displayText}</div>
+                        {week.isCurrent && (
+                          <div className="current-indicator">Bugün</div>
+                        )}
+                      </div>
+                      {index < weeks.length - 1 && (
+                        <div 
+                          className="resize-handle week-resize-handle"
+                          onMouseDown={(e) => handleResizeStart(e, week.startDate)}
+                          onDoubleClick={(e) => handleResizeDoubleClick(e, week.startDate)}
+                        />
+                      )}
+                    </Fragment>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="tasks-grid" ref={bodyScrollRef}>
-            {persons.map((person) => (
-              <div
-                key={person.id}
-                ref={(el) => {
-                  if (el) taskRowsRef.current.set(person.id, el);
-                }}
-                className="person-tasks-row"
+            <div className="table-body">
+              <div 
+                className="persons-column"
+                style={{ width: `${personsColumnWidth}px` }}
               >
-                {weeks.map((week, index) => (
-                  <Fragment key={week.startDate}>
-                    <TaskCell
-                      tasks={getTasksForCell(person.id, week.startDate)}
-                      person={person}
-                      persons={persons}
-                      weekStart={week.startDate}
-                      onTaskUpdate={loadData}
-                      style={{
-                        width: weekWidths.get(week.startDate) 
-                          ? `${weekWidths.get(week.startDate)}px` 
-                          : undefined,
-                        flex: weekWidths.get(week.startDate) ? '0 0 auto' : undefined
-                      }}
-                    />
-                    {index < weeks.length - 1 && (
-                      <div 
-                        className="resize-handle week-resize-handle"
-                        onMouseDown={(e) => handleResizeStart(e, week.startDate)}
-                        onDoubleClick={(e) => handleResizeDoubleClick(e, week.startDate)}
+                {persons.map((person) => (
+                  <div
+                    key={person.id}
+                    ref={(el) => {
+                      if (el) personRowsRef.current.set(person.id, el);
+                    }}
+                    className={`person-row ${draggedPersonId === person.id ? 'dragging' : ''} ${dragOverPersonId === person.id ? 'drag-over' : ''}`}
+                    style={{ borderLeftColor: person.color || getCSSVar('--color-accent', COLORS.accent) }}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, person.id)}
+                    onDragOver={(e) => handleDragOver(e, person.id)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, person.id)}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <div className="person-drag-handle">⋮⋮</div>
+                    <div className="person-info">
+                      <div
+                        className="person-color"
+                        style={{ backgroundColor: person.color || getCSSVar('--color-accent', COLORS.accent) }}
                       />
-                    )}
-                  </Fragment>
+                      <span className="person-name">{person.name}</span>
+                    </div>
+                    <button
+                      className="person-edit-btn"
+                      onClick={() => handleEditPerson(person)}
+                      title="Düzenle"
+                    >
+                      ✎
+                    </button>
+                  </div>
+                ))}
+                {persons.length === 0 && (
+                  <div className="empty-state">
+                    Henüz kişi eklenmemiş. Kişi eklemek için yukarıdaki butona tıklayın.
+                  </div>
+                )}
+              </div>
+
+              <div className="tasks-grid" ref={bodyScrollRef}>
+                {persons.map((person) => (
+                  <div
+                    key={person.id}
+                    ref={(el) => {
+                      if (el) taskRowsRef.current.set(person.id, el);
+                    }}
+                    className="person-tasks-row"
+                  >
+                    {weeks.map((week, index) => (
+                      <Fragment key={week.startDate}>
+                        <TaskCell
+                          tasks={getTasksForCell(person.id, week.startDate)}
+                          person={person}
+                          persons={persons}
+                          weekStart={week.startDate}
+                          onTaskUpdate={loadData}
+                          style={{
+                            width: weekWidths.get(week.startDate) 
+                              ? `${weekWidths.get(week.startDate)}px` 
+                              : undefined,
+                            flex: weekWidths.get(week.startDate) ? '0 0 auto' : undefined
+                          }}
+                        />
+                        {index < weeks.length - 1 && (
+                          <div 
+                            className="resize-handle week-resize-handle"
+                            onMouseDown={(e) => handleResizeStart(e, week.startDate)}
+                            onDoubleClick={(e) => handleResizeDoubleClick(e, week.startDate)}
+                          />
+                        )}
+                      </Fragment>
+                    ))}
+                  </div>
                 ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        ) : (
+          <GanttView
+            persons={persons}
+            weeks={weeks}
+            tasks={tasks}
+            personsColumnWidth={personsColumnWidth}
+            weekWidths={weekWidths}
+            onTaskUpdate={loadData}
+          />
+        )}
       </div>
 
       {isPersonModalOpen && (
