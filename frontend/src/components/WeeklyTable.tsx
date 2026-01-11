@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, Fragment } from 'react';
-import { Person, Task, Week } from '../types';
-import { personsApi, tasksApi, weeksApi } from '../services/api';
+import { Person, Task, Week, ExportData } from '../types';
+import { personsApi, tasksApi, weeksApi, dataApi } from '../services/api';
 import { getCSSVar, COLORS } from '../utils/colors';
 import TaskCell from './TaskCell';
 import PersonModal from './PersonModal';
@@ -18,11 +18,14 @@ export default function WeeklyTable() {
   const weekHeadersRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const headerScrollRef = useRef<HTMLDivElement>(null);
   const bodyScrollRef = useRef<HTMLDivElement>(null);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
   const [personsColumnWidth, setPersonsColumnWidth] = useState(250);
   const [weekWidths, setWeekWidths] = useState<Map<string, number>>(new Map());
   const isResizingRef = useRef<string | null>(null);
   const resizeStartXRef = useRef<number>(0);
   const resizeStartWidthRef = useRef<number>(0);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -153,6 +156,69 @@ export default function WeeklyTable() {
       alert('Veriler yüklenirken bir hata oluştu');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    try {
+      setIsExporting(true);
+      const blob = await dataApi.export();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const dateLabel = new Date().toISOString().split('T')[0];
+      link.href = url;
+      link.download = `plan-data-${dateLabel}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      alert('Veriler dışa aktarılırken bir hata oluştu');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImportClick = () => {
+    if (isImporting) return;
+    importInputRef.current?.click();
+  };
+
+  const handleImportFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      const fileText = await file.text();
+      const parsed = JSON.parse(fileText) as Partial<ExportData>;
+
+      if (!parsed || !Array.isArray(parsed.persons) || !Array.isArray(parsed.tasks)) {
+        alert('Geçersiz dosya formatı. persons ve tasks alanları bulunamadı.');
+        return;
+      }
+
+      const confirmed = window.confirm('Mevcut veriler, seçtiğiniz dosyadaki veriler ile değiştirilecek. Devam etmek istediğinize emin misiniz?');
+      if (!confirmed) {
+        return;
+      }
+
+      setIsImporting(true);
+      await dataApi.import({
+        persons: parsed.persons,
+        tasks: parsed.tasks
+      });
+      await loadData();
+      alert('Veriler başarıyla içe aktarıldı');
+    } catch (error) {
+      console.error('Error importing data:', error);
+      alert('Veriler içe aktarılırken bir hata oluştu. Lütfen dosyayı kontrol edin.');
+    } finally {
+      setIsImporting(false);
+      event.target.value = '';
     }
   };
 
@@ -362,15 +428,42 @@ export default function WeeklyTable() {
 
   return (
     <>
+      <div className="data-actions-panel">
+        <div className="data-actions">
+          <button
+            className="btn-secondary"
+            onClick={handleExportData}
+            disabled={isExporting}
+          >
+            {isExporting ? 'Dışa aktarılıyor...' : 'Verileri Dışa Aktar'}
+          </button>
+          <button
+            className="btn-secondary btn-danger"
+            onClick={handleImportClick}
+            disabled={isImporting}
+          >
+            {isImporting ? 'İçe aktarılıyor...' : 'Verileri İçe Aktar'}
+          </button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={handleImportFileChange}
+            style={{ display: 'none' }}
+          />
+        </div>
+      </div>
       <div className="weekly-table-container">
         <div className="table-header">
           <div 
             className="table-header-left"
             style={{ width: `${personsColumnWidth}px` }}
           >
-            <button className="btn-add-person" onClick={handleAddPerson}>
-              + Kişi Ekle
-            </button>
+            <div className="table-toolbar">
+              <button className="btn-add-person" onClick={handleAddPerson}>
+                + Kişi Ekle
+              </button>
+            </div>
           </div>
           <div 
             className="resize-handle"
@@ -503,4 +596,3 @@ export default function WeeklyTable() {
     </>
   );
 }
-

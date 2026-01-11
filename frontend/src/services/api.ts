@@ -1,9 +1,18 @@
 import axios from "axios";
-import { Person, Task, Week } from "../types";
+import { Person, Task, Week, ExportData } from "../types";
+import { APP_CONFIG } from "../config";
 
-// Use environment variable for API URL, fallback to production backend
-const API_URL =
-  import.meta.env.VITE_API_URL || "https://planback.uguratadargun.com/api";
+export const isDev = APP_CONFIG.isDev;
+
+const resolveApiUrl = () => {
+  if (APP_CONFIG.customApiUrl) {
+    return APP_CONFIG.customApiUrl;
+  }
+
+  return APP_CONFIG.isDev ? APP_CONFIG.devApiUrl : APP_CONFIG.prodApiUrl;
+};
+
+const API_URL = resolveApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
@@ -70,6 +79,19 @@ export const tasksApi = {
 export const weeksApi = {
   getAll: async (): Promise<Week[]> => {
     const response = await api.get<Week[]>("/weeks");
+    return response.data;
+  },
+};
+
+// Data import/export API
+export const dataApi = {
+  export: async (): Promise<Blob> => {
+    const response = await api.get<Blob>("/data/export", { responseType: "blob" });
+    return response.data;
+  },
+
+  import: async (payload: ExportData): Promise<ExportData> => {
+    const response = await api.post<ExportData>("/data/import", payload);
     return response.data;
   },
 };

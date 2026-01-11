@@ -4,7 +4,7 @@ import { Task } from './models/Task.js';
 
 const DB_PATH = './data/db.json';
 
-interface Database {
+export interface Database {
   persons: Person[];
   tasks: Task[];
 }
@@ -188,6 +188,27 @@ export const database = {
     db.tasks.splice(index, 1);
     saveDB();
     return true;
+  },
+
+  exportData: (): Database => {
+    loadDB();
+    return {
+      persons: [...db.persons],
+      tasks: [...db.tasks]
+    };
+  },
+
+  importData: (data: Database): Database => {
+    if (!data || !Array.isArray(data.persons) || !Array.isArray(data.tasks)) {
+      throw new Error('Invalid database payload');
+    }
+
+    // Replace in-memory database and persist
+    db = {
+      persons: data.persons.map(person => ({ ...person })),
+      tasks: data.tasks.map(task => ({ ...task }))
+    };
+    saveDB();
+    return db;
   }
 };
-

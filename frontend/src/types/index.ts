@@ -25,3 +25,7 @@ export interface Week {
   isCurrent: boolean;
 }
 
+export interface ExportData {
+  persons: Person[];
+  tasks: Task[];
+}

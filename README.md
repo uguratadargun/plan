@@ -10,6 +10,7 @@ React ve Node.js ile geliştirilmiş haftalık iş planlama uygulaması. Tablo f
 - 🎨 Modern ve responsive arayüz
 - 🔄 Güncel hafta vurgusu (timeline)
 - 💾 JSON dosya tabanlı veri saklama
+- 📤 JSON formatında veri import/export
 
 ## Deployment
 
@@ -45,6 +46,15 @@ npm run dev
 ```
 
 Frontend `http://localhost:3000` adresinde çalışacaktır.
+
+> Not: Frontend'deki API adresi artık `frontend/src/config.ts` içindeki `APP_CONFIG` üzerinden kontrol ediliyor. `isDev` değerini `true/false` yaparak ya da `customApiUrl` alanını doldurarak hangi backend'e bağlanılacağını kolayca yönetebilirsiniz.
+
+### Veri Yedekleme (Import/Export)
+
+Tablonun sol tarafındaki "Verileri Dışa Aktar" ve "Verileri İçe Aktar" butonları ile JSON formatında yedek alabilir veya geri yükleyebilirsiniz.
+
+- **Dışa aktarma**: Tüm `persons` ve `tasks` verilerini tarih damgalı bir `plan-data-YYYY-MM-DD.json` dosyası olarak indirir.
+- **İçe aktarma**: Seçtiğiniz JSON dosyasındaki verilerle mevcut veritabanını değiştirir. İşlem öncesinde onay istenir.
 
 ## Kullanım
 
@@ -83,5 +93,3 @@ project-management/
 ├── DEPLOYMENT.md          # Coolify deployment guide
 └── README.md
 ```
-
-
