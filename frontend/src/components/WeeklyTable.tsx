@@ -146,7 +146,11 @@ export default function WeeklyTable() {
 
   const loadData = async () => {
     try {
-      setIsLoading(true);
+      // Only show global loading on initial load
+      if (persons.length === 0 && weeks.length === 0) {
+        setIsLoading(true);
+      }
+      
       const [personsData, weeksData, tasksData] = await Promise.all([
         personsApi.getAll(),
         weeksApi.getAll(),

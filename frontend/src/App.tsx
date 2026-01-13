@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import WeeklyTable from './components/WeeklyTable';
 import Login from './components/Login';
+import ThemeToggle from './components/ThemeToggle';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
 
@@ -40,6 +42,7 @@ function App() {
         <div className="app-header-content">
           <h1>Haftalık Planlama</h1>
           <div className="app-header-user">
+            <ThemeToggle />
             <span className="user-name">{username}</span>
             <button className="logout-button" onClick={handleLogout}>
               Çıkış
@@ -51,6 +54,14 @@ function App() {
         <WeeklyTable />
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

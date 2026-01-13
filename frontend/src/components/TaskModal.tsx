@@ -135,10 +135,10 @@ export default function TaskModal({
         // Update existing task
         await tasksApi.update(task.id, {
           name: name.trim(),
-          description: description.trim() || undefined,
+          description: description.trim() || "",
           personIds: selectedPersonIds,
           color,
-          epicUrl: epicUrl.trim() || undefined,
+          epicUrl: epicUrl.trim() || "",
         });
       } else {
         // Create multiple tasks for each week

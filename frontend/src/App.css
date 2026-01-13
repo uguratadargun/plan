@@ -7,11 +7,11 @@
 .app-header {
   background: linear-gradient(
     135deg,
-    var(--color-primary-gradient-start) 0%,
-    var(--color-primary-gradient-end) 100%
+    var(--color-header-bg-start) 0%,
+    var(--color-header-bg-end) 100%
   );
-  color: white;
-  padding: 2rem 2.5rem;
+  color: var(--color-header-text);
+  padding: 1.5rem 2.5rem;
   box-shadow: 0 4px 20px var(--shadow-primary);
   position: relative;
   overflow: hidden;

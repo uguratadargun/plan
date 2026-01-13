@@ -1,8 +1,8 @@
 .task-cell {
   min-height: 80px;
   padding: 1rem;
-  border: 1px solid #e2e8f0;
-  background: white;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -21,11 +21,11 @@
 }
 
 .task-cell.drag-over {
-  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  background: var(--color-accent-soft);
   border-color: var(--color-primary);
   border-width: 2px;
   border-style: dashed;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 16px var(--shadow-focus);
   transform: scale(1.02);
 }
 
@@ -45,7 +45,7 @@
 }
 
 .task-cell-empty {
-  color: #94a3b8;
+  color: var(--color-text-tertiary);
   font-size: 0.875rem;
   text-align: center;
   font-style: italic;
@@ -58,7 +58,7 @@
 }
 
 .task-cell:hover .task-cell-empty {
-  color: #64748b;
+  color: var(--color-text-secondary);
   transform: scale(1.02);
 }
 

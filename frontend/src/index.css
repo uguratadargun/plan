@@ -1,60 +1,88 @@
 :root {
-  /* Base Primary Color - Change this to update all colors */
+  /* Base Colors - Light Theme Default */
   --color-primary: #1e293b;
-
-  /* Primary Color Variations - Derived from --color-primary */
-  --color-primary-light: color-mix(
-    in srgb,
-    var(--color-primary) 80%,
-    white 20%
-  );
-  --color-primary-dark: color-mix(in srgb, var(--color-primary) 80%, black 20%);
-  --color-primary-gradient-start: var(--color-primary);
-  --color-primary-gradient-end: var(--color-primary-light);
-  --color-primary-gradient-hover-start: var(--color-primary-dark);
-  --color-primary-gradient-hover-end: var(--color-primary);
-
-  /* Accent Colors - Derived from --color-primary */
-  --color-accent: var(--color-primary-light);
-  --color-accent-light: color-mix(in srgb, var(--color-primary) 60%, white 40%);
-  --color-accent-dark: var(--color-primary);
-
-  /* Background Colors - Neutral grays (independent) */
+  --color-primary-light: #334155;
+  --color-primary-dark: #0f172a;
+  
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f8fafc;
   --color-bg-tertiary: #f1f5f9;
-  --color-bg-hover: color-mix(in srgb, var(--color-primary) 8%, transparent);
-
-  /* Border Colors - Derived from --color-primary */
+  --color-bg-hover: rgba(30, 41, 59, 0.08);
+  
   --color-border: #e2e8f0;
   --color-border-hover: #cbd5e1;
-  --color-border-focus: var(--color-accent);
+  --color-border-focus: #3b82f6;
+  
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  
+  --shadow-primary: rgba(15, 23, 42, 0.08);
+  --shadow-primary-hover: rgba(15, 23, 42, 0.12);
+  
+  --bg-app: #f1f5f9;
+  
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-accent-soft: #eff6ff;
+  --color-accent-border: #dbeafe;
 
-  /* Text Colors - Derived from --color-primary */
-  --color-text-primary: var(--color-primary);
-  --color-text-secondary: color-mix(
-    in srgb,
-    var(--color-primary) 50%,
-    white 50%
-  );
-  --color-text-tertiary: color-mix(
-    in srgb,
-    var(--color-primary) 30%,
-    white 70%
-  );
+  --color-header-bg-start: #1e293b;
+  --color-header-bg-end: #334155;
+  --color-header-text: #ffffff;
 
-  /* Shadow Colors - Derived from --color-primary */
-  --shadow-primary: color-mix(
-    in srgb,
-    var(--color-primary-dark) 25%,
-    transparent
-  );
-  --shadow-primary-hover: color-mix(
-    in srgb,
-    var(--color-primary-dark) 40%,
-    transparent
-  );
-  --shadow-focus: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --color-error: #ef4444;
+  --color-error-soft: #fee2e2;
+  --color-error-border: #fecaca;
+  
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+
+  --gradient-bg-start: #1e293b;
+  --gradient-bg-end: #334155;
+}
+
+[data-theme='dark'] {
+  --color-primary: #f8fafc;
+  --color-primary-light: #f1f5f9;
+  --color-primary-dark: #ffffff;
+  
+  --color-bg-primary: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-bg-tertiary: #334155;
+  --color-bg-hover: rgba(255, 255, 255, 0.1);
+  
+  --color-border: #334155;
+  --color-border-hover: #475569;
+  --color-border-focus: #3b82f6;
+  
+  --color-text-primary: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+  
+  --shadow-primary: rgba(0, 0, 0, 0.3);
+  --shadow-primary-hover: rgba(0, 0, 0, 0.45);
+  
+  --bg-app: #020617;
+  
+  --color-accent: #3b82f6;
+  --color-accent-hover: #60a5fa;
+  --color-accent-soft: rgba(59, 130, 246, 0.1);
+  --color-accent-border: rgba(59, 130, 246, 0.2);
+
+  --color-header-bg-start: #020617;
+  --color-header-bg-end: #0f172a;
+  --color-header-text: #f1f5f9;
+
+  --color-error: #f87171;
+  --color-error-soft: rgba(248, 113, 113, 0.1);
+  --color-error-border: rgba(248, 113, 113, 0.2);
+  
+  --color-danger: #f87171;
+  --color-danger-hover: #ef4444;
+
+  --gradient-bg-start: #020617;
+  --gradient-bg-end: #0f172a;
 }
 
 /* Fallback for browsers that don't support color-mix() */
@@ -84,8 +112,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  background: var(--bg-app);
+  color: var(--color-text-primary);
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 code {

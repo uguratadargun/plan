@@ -1,0 +1,36 @@
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-right: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.theme-toggle svg {
+  color: #fbbf24; /* Sun color default */
+}
+
+.theme-toggle:hover svg {
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .theme-toggle svg {
+  color: #fbbf24; /* Amber for sun */
+}
+
+[data-theme='light'] .theme-toggle svg {
+  color: #fcd34d; /* Yellow for moon (sun icon is used for light mode) */
+}

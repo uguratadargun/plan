@@ -6,8 +6,8 @@
 
 .gantt-header {
   display: flex;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--color-bg-primary);
+  border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -18,15 +18,15 @@
   min-width: 200px;
   flex: 0 0 auto;
   padding: 1rem 1.25rem;
-  border-right: 1px solid #e2e8f0;
-  background: white;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
   display: flex;
   align-items: center;
 }
 
 .gantt-header-title {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 0.95rem;
 }
 
@@ -43,16 +43,12 @@
 .gantt-week-header {
   padding: 1rem 0.75rem;
   text-align: center;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--color-border);
   transition: all 0.3s ease;
 }
 
 .gantt-week-header.current-week {
-  background: linear-gradient(
-    135deg,
-    var(--color-bg-tertiary) 0%,
-    var(--color-border) 100%
-  );
+  background: var(--color-bg-tertiary);
   border-bottom: 3px solid var(--color-accent);
   font-weight: 600;
   box-shadow: inset 0 -3px 0 var(--color-accent);
@@ -60,7 +56,7 @@
 
 .gantt-week-title {
   font-size: 0.85rem;
-  color: #334155;
+  color: var(--color-text-secondary);
   margin-bottom: 0.2rem;
 }
 
@@ -71,17 +67,17 @@
 .gantt-persons {
   min-width: 200px;
   flex: 0 0 auto;
-  border-right: 1px solid #e2e8f0;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
 }
 
 .gantt-person-row {
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--color-bg-tertiary);
   border-left: 4px solid;
-  background: white;
+  background: var(--color-bg-primary);
 }
 
 .gantt-person-info {
@@ -99,7 +95,7 @@
 
 .gantt-person-name {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 0.95rem;
 }
 
@@ -111,8 +107,8 @@
 
 .gantt-row {
   position: relative;
-  border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.4), rgba(255, 255, 255, 0.9));
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-primary);
 }
 
 .gantt-row-grid {
@@ -121,12 +117,12 @@
 }
 
 .gantt-cell {
-  border-right: 1px dashed #e2e8f0;
+  border-right: 1px dashed var(--color-border);
   cursor: pointer;
 }
 
 .gantt-cell.current-week {
-  background: rgba(59, 130, 246, 0.06);
+  background: var(--color-accent-soft);
 }
 
 .gantt-bar {
@@ -166,22 +162,22 @@
 .gantt-body::-webkit-scrollbar-track,
 .gantt-header-right::-webkit-scrollbar-track,
 .gantt-timeline::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--color-bg-tertiary);
   border-radius: 5px;
 }
 
 .gantt-body::-webkit-scrollbar-thumb,
 .gantt-header-right::-webkit-scrollbar-thumb,
 .gantt-timeline::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-border-hover);
   border-radius: 5px;
-  border: 2px solid #f1f5f9;
+  border: 2px solid var(--color-bg-tertiary);
 }
 
 .gantt-body::-webkit-scrollbar-thumb:hover,
 .gantt-header-right::-webkit-scrollbar-thumb:hover,
 .gantt-timeline::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-text-tertiary);
 }
 
 @media (max-width: 768px) {

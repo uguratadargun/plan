@@ -238,6 +238,8 @@ export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpda
                 const taskName = task.name || task.description || '';
                 const taskDescription = task.description || '';
                 const hasDescription = taskDescription && taskDescription !== taskName;
+                const hasEpic = !!task.epicUrl;
+                const shouldShowHover = hasDescription || hasEpic;
                 // Backward compatibility: if color doesn't exist, generate one or use default
                 const taskColor = task.color || '#3b82f6';
                 const isDragging = draggedTaskId === task.id;
@@ -258,7 +260,7 @@ export default function TaskCell({ tasks, person, persons, weekStart, onTaskUpda
                     }}
                     onClick={(e) => handleTaskClick(e, task)}
                     onMouseEnter={(e) => {
-                      if (!draggedTaskId && hasDescription) {
+                      if (!draggedTaskId && shouldShowHover) {
                         handleTaskMouseEnter(e, task);
                       }
                     }}
